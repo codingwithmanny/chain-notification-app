@@ -337,9 +337,6 @@ const Home = () => {
                             );
                           })}
                       </select>
-                      {JSON.stringify({
-                        inputs: inputs.functionValue
-                      })}
                     </div>
                     <div className="mb-4">
                       <label
