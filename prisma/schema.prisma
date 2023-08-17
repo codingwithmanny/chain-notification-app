@@ -1,0 +1,29 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Job {
+  id                 String   @id @default(uuid())
+  status             String?  @default("PENDING")
+  jobId              String?
+  network            String
+  contractAddress    String
+  contractABICode    String
+  functionName       String
+  functionValue      String
+  functionValueType  String
+  functionValueIndex Int?     @default(0)
+  operator           String
+  conditionValue     String
+  email              String
+  attempts           Int?     @default(0)
+  createdAt          DateTime @default(now())
+}
