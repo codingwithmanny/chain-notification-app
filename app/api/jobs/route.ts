@@ -3,10 +3,14 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { PrismaClient, Prisma } from "@prisma/client";
+import { Client } from "@upstash/qstash";
 
 // Config
 // ========================================================
 const prisma = new PrismaClient();
+const client = new Client({
+  token: `${process.env.QSTASH_TOKEN}`,
+});
 
 // Functions
 // ========================================================
@@ -20,9 +24,23 @@ export const GET = async (request: NextRequest) => {
   const search = searchParams.get("search") as string;
   const limit = parseInt(searchParams.get("limit") as string, 0) || 10;
   const offset = parseInt(searchParams.get("offset") as string, 0) || 0;
-  const order = ["id", "status", "jobId", "network", "contractAddress", "constractABICode", "functonName", "functionValue", "functionValueType", "functionValueIndex", "operator", "conditionValue", "email", "attempts", "createdAt"].includes(
-    searchParams.get("order") as string
-  )
+  const order = [
+    "id",
+    "status",
+    "jobId",
+    "network",
+    "contractAddress",
+    "constractABICode",
+    "functonName",
+    "functionValue",
+    "functionValueType",
+    "functionValueIndex",
+    "operator",
+    "conditionValue",
+    "email",
+    "attempts",
+    "createdAt",
+  ].includes(searchParams.get("order") as string)
     ? (searchParams.get("order") as string)
     : "id";
   const sort = ["asc", "desc"].includes(searchParams.get("sort") as string)
@@ -38,7 +56,7 @@ export const GET = async (request: NextRequest) => {
       functionName: {
         contains: search,
       },
-    }
+    };
   }
 
   // Limit
@@ -91,13 +109,37 @@ export const POST = async (request: NextRequest) => {
   // Query
   try {
     const jobCreate: Prisma.JobCreateArgs = {
-      data: payload
+      data: payload,
     };
+
+    const job = await prisma.job.create(jobCreate);
+
+    // Create cronJob
+    const cronJob = (await client.publishJSON({
+      url: `${process.env.DOMAIN_URL}/api/cron/${job.id}`,
+      body: {},
+      headers: {},
+      cron: "* * * * *", // Every minute
+    })) as {
+      messageId?: string;
+      scheduleId?: string;
+    };
+    const messageId = cronJob?.messageId ?? cronJob.scheduleId;
+
+    // Update
+    await prisma.job.update({
+      where: {
+        id: job.id,
+      },
+      data: {
+        jobId: messageId,
+      },
+    });
 
     // Success
     return NextResponse.json(
       {
-        data: await prisma.job.create(jobCreate),
+        data: job,
       },
       {
         status: 200,

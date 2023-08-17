@@ -96,6 +96,7 @@ export const POST = async (
         evalResult = eval(evalString);
       }
 
+      // Debug
       console.log({ evalResult });
       console.log({ readTxValue });
     }

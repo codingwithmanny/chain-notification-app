@@ -8,7 +8,6 @@ import { config } from "dotenv";
 // ========================================================
 const prisma = new PrismaClient();
 config();
-const API_URL = "http://localhost:3000/api";
 const client = new Client({
   token: `${process.env.QSTASH_TOKEN}`,
 });
