@@ -1,34 +1,66 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Chain Notification Web App
 
-## Getting Started
+A simple web app that allows users to track changes on chain and be notified.
 
-First, run the development server:
+---
+
+## Requirements
+
+- NVM or NodeJS 18.16.1
+- Upstash QStash Account (upstash.com)
+- Resend.com Account (resend.com)
+- Ngrok
+
+---
+
+## Local Development
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+# FROM: ./
+
+cp .env.example .env; # Add correct env vars
+pnpm install;
+pnpm db:generate;
+pnpm db:seed;
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Start ngrok service
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+# FROM path/to/ngrok binary
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+ngrok http 3000
+```
 
-## Learn More
+Start local development server
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+# FROM: ./
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+pnpm dev;
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## Additional Scripts
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Fetch script for creating a job via http request.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+```bash
+# FROM: ./
+
+pnpm create:fetch;
+```
+
+Request to create a job and add QStash
+
+```bash
+# FROM: ./
+
+pnpm create:cron;
+```
+
+---
+
+by [@codingwithmanny](https://x.com/codingwithmanny)
+
