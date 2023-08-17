@@ -22,6 +22,10 @@ const mailer = nodemailer.createTransport({
 const client = new Client({
   token: `${process.env.QSTASH_TOKEN}`,
 });
+const receiver = new Receiver({
+  currentSigningKey: `${process.env.QSTASH_CURRENT_SIGNING_KEY}`,
+  nextSigningKey: `${process.env.QSTASH_NEXT_SIGNING_KEY}`,
+});
 
 // Functions
 // ========================================================
@@ -36,10 +40,18 @@ export const POST = async (
   { params }: { params: { jobId: string } }
 ) => {
   const { jobId } = params;
+  // Debug
   console.log({ jobId });
 
   try {
     // Verify request signature to prevent random triggering requests and verify coming from qstash
+    const isVerified = await receiver.verify({
+      body: JSON.stringify(await request.json()),
+      signature: request.headers.get("upstash-signature") as string,
+      url: `${process.env.DOMAIN_URL}/api/cron/${jobId}`,
+    });
+    // Debug
+    console.log({ isVerified });
 
     // Validate if job exits
     const job = await prisma.job.findUnique({
