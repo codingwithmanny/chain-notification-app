@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "next lint",
     "db:migrate": "npx prisma migrate dev",
-    "db:generate": "npx prisma generate"
+    "db:generate": "npx prisma generate",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:studio": "npx prisma studio"
   },
   "dependencies": {
     "@prisma/client": "5.1.1",
@@ -26,6 +28,8 @@
     "typescript": "5.1.6"
   },
   "devDependencies": {
-    "prisma": "^5.1.1"
+    "@faker-js/faker": "^8.0.2",
+    "prisma": "^5.1.1",
+    "tsx": "^3.12.7"
   }
 }
